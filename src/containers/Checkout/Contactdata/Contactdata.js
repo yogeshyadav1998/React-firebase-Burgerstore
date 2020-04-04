@@ -65,7 +65,9 @@ class contactdata extends Component{
                     },
                     value: '',
                     validation:{
-                        required:true
+                        required:true,
+                        minLength: 6,
+                        maxLength: 6
                     },
                     valid: false
                 },
@@ -121,11 +123,19 @@ class contactdata extends Component{
                     }); 
     }
 
-    checkvalidity(value, rule){
+    checkvalidity(value, rules){
         let isvalid = false;
 
-        if(rule.requires){
-            isvalid = value.trim() !== '' 
+        if(rules.requires){
+            isvalid = value.trim() !== '' && isvalid
+        }
+
+        if(rules.minLength){
+            isvalid = value.length >= rules.minLength && isvalid
+        }
+
+        if(rules.maxLength){
+            isvalid = value.lenght <= rules.maxLength && isvalid 
         }
 
         return isvalid;
