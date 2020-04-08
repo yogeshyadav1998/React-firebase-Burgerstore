@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import axios from '../../axiosorders';
 import {connect} from 'react-redux';
-import * as actiontype from './../../store/actions';
+import * as action from '../../store/actions/index';
+import axios from '../../axiosorders';
 
 import Aux from '../../hoc/Auxs/Auxs';
 import Burger from '../../components/Burger/Burger';
@@ -16,10 +16,14 @@ import withErrorHandler from '../../hoc/Witherrorhandler/Witherrorhandler';
 class BurgerBuilder extends Component {
 
     state = {
-        purchasing: false,
-        loading: false
+        purchasing: false
     }
 
+    componentDidMount () {
+        console.log('hii');
+        this.props.onfetchingredients();
+        console.log(this.props.ingredients);
+    }
 
     updatepurchasestate(ingredients) { 
         const sum = Object.keys(ingredients)
@@ -42,29 +46,20 @@ class BurgerBuilder extends Component {
     }
 
     purchasecontinuehandler = () => {
-        const ingredientparams = [];
-        for(let i  in this.state.ingredients) {
-            ingredientparams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
-        }
-        ingredientparams.push('price=' + this.state.totalprice);
-        const ingredientstring = ingredientparams.join('&');
-        this.props.history.push({
-            pathname: '/checkout',
-            search:'?' + ingredientstring
-        });
+        this.props.oninitorderburger();
+        this.props.history.push('/checkout')
     }
 
     render () {
         const disabledinfo = {
             ...this.props.ingredients
-        }
+        } 
         for (let key in disabledinfo) {
-            disabledinfo[key] = disabledinfo[key] <=0
+            disabledinfo[key] = disabledinfo[key]<=0
         } 
 
         let ordersummary = null;
-        
-        let burger = <Spinner/>
+        let burger = <Spinner/>;
         if(this.props.ingredients){
             burger = (
                 <Aux>
@@ -84,10 +79,6 @@ class BurgerBuilder extends Component {
                         purchasecancelled={this.purchasecancelhandler}
                         purchasecontinued={this.purchasecontinuehandler} />
         }
-        
-        if(this.state.loading){
-            ordersummary = <Spinner/>
-        }
 
         return (
             <Aux>
@@ -103,15 +94,18 @@ class BurgerBuilder extends Component {
 
 const mapStateToPorps = state =>{
     return {
-        ingredients: state.ingredients,
-        totalprice: state.totalprice
+        ingredients: state.burgerbuilder.ingredients,
+        totalprice: state.burgerbuilder.totalprice,
+        error: state.burgerbuilder.error
     };
 }
  
 const mapDispatchToProps = dispatch =>{
     return{
-        onaddingredient: (ingredientname) => dispatch({type: actiontype.ADD_INGREDIENT, ingredientname: ingredientname}),
-        onremoveingredient: (ingredientname) => dispatch({type: actiontype.REMOVE_INGREDIENT, ingredientname: ingredientname})
+        onaddingredient: (ingredientname) => dispatch(action.addingredient(ingredientname)),
+        onremoveingredient: (ingredientname) => dispatch(action.removeingredient(ingredientname)),
+        onfetchingredients: () => dispatch(action.fetchingredients()),
+        oninitorderburger: () => dispatch(action.initorderburger())
     };
 }
 

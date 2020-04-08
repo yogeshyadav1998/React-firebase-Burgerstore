@@ -1,42 +1,47 @@
 import React, { Component } from 'react';
 import axios from './../../axiosorders';
+import {connect} from 'react-redux';
 
 import Order from './../../components/Order/Order';
 import witherrorhandler from './../../hoc/Witherrorhandler/Witherrorhandler';
+import * as action from './../../store/actions/index'; 
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 class orders extends Component {
-    state={
-        orders:[],
-        loading: true
-    }
+
     componentDidMount(){
-        axios.get('/orders.json')
-        .then(res=>{
-            const fetchedorders = [];
-            for(let key in res.data){
-                fetchedorders.push(
-                    {...res.data[key],
-                    id: key}
-                )}
-            this.setState({loading: false, orders: fetchedorders});
-        })
-        .catch(err=>{
-            this.setState({loading:false});
-        });
+        this.props.onfetchorders();
     }
 
     render(){
+        let orders = <Spinner/>
+        if(!this.props.loading){
+            orders = this.props.orders.map(order=> (
+                <Order 
+                    key={order.id}
+                    ingredients={order.ingredients}
+                    price={+order.price} />
+            ))
+        }
         return(
             <div>
-                {this.state.orders.map(order=> (
-                    <Order 
-                        key={order.id}
-                        ingredients={order.ingredients}
-                        price={+order.price} />
-                ))}
+                {orders}
             </div>
         )
     }
 }
 
-export default witherrorhandler(orders, axios);
+const mapStateTProps= state => {
+    return {
+        orders: this.state.order.orders,
+        loading: this.state.order.loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return{
+        onfetchorders: () => dispatch(action.fetchorders)
+    }
+}
+
+export default connect(mapStateTProps ,mapDispatchToProps)(witherrorhandler(orders, axios));
