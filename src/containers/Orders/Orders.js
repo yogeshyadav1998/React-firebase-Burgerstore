@@ -10,7 +10,7 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 class orders extends Component {
 
     componentDidMount(){
-        this.props.onfetchorders();
+        this.props.onfetchorders(this.props.token);
     }
 
     render(){
@@ -31,17 +31,18 @@ class orders extends Component {
     }
 }
 
-const mapStateTProps= state => {
+const mapStateT0Props= state => {
     return {
-        orders: this.state.order.orders,
-        loading: this.state.order.loading
+        orders: state.order.orders,
+        loading: state.order.loading,
+        token: state.auth.token
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return{
-        onfetchorders: () => dispatch(action.fetchorders)
+        onfetchorders: (token) => dispatch(action.fetchorders(token))
     }
 }
 
-export default connect(mapStateTProps ,mapDispatchToProps)(witherrorhandler(orders, axios));
+export default connect(mapStateT0Props ,mapDispatchToProps)(witherrorhandler(orders, axios));

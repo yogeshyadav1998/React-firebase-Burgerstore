@@ -19,17 +19,10 @@ const reducer = (state= initialstate, action) =>{
                 loading: true
             }
         case actiontype.ORDER_BURGER_SUCCESS:
-            const neworder ={
-                ingredients: action.orderdata.ingredients,
-                orderdata: action.orderdata.orderdata,
-                price: action.orderdata.price,
-                id: action.orderid
-            }
             return{
                 ...state,
                 loading: false,
-                ordered: true,
-                orders: state.orders.concat(neworder)
+                ordered: true
             }
         case actiontype.ORDER_BURGER_FAILED:
             return{

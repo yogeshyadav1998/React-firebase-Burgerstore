@@ -9,3 +9,8 @@ export {
     initorderburger,
     fetchorders
 } from './orders';
+
+export {
+    auth,
+    logout
+} from './auth'
